@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.8
 
+from pprint import pprint
 import re
 
 output = """
@@ -48,20 +49,22 @@ def sysinfo_scrape(output: str = output) -> dict:
     scrape = {}
 
     for line in output.splitlines():
-        # Remove logo which should end with two spaces
-        line = re.sub(r'.+  ', '', line)
-
-        if line == '':
-            continue
-
         # Parse out key and value
-        m = re.search(r'(.+?):(.+)', line)
+        m = re.search(r"""
+                (?:.+\ {2})     # Capture and discard up to last 2 space whitespace
+                (\w[\s\w]*)     # Capture single or multiword keys
+                [@:]            # Split line on either : or @
+                (.+)            # Capture value for key
+                """, line, re.VERBOSE)
 
-        if not m:
-            scrape['Name'] = line
-        else:
-            scrape[m.group(1)] = m.group(2).strip()
+        if m:
+            if not 'Name' in scrape and '@' in line:
+                scrape['Name'] = f'{m.group(1)}@{m.group(2)}'
+            else:
+                scrape[m.group(1)] = m.group(2).strip()
 
     return scrape
 
-print(sysinfo_scrape())
+pprint(sysinfo_scrape(), sort_dicts=False)
+pprint(sysinfo_scrape(mac), sort_dicts=False)
+
