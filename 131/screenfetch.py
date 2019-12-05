@@ -48,10 +48,13 @@ def sysinfo_scrape(output: str = output) -> dict:
     scrape = {}
 
     for line in output.splitlines():
-        if len(line) < 39:
+        # Remove logo which should end with two spaces
+        line = re.sub(r'.+  ', '', line)
+
+        if line == '':
             continue
 
-        line = line[39:]
+        # Parse out key and value
         m = re.search(r'(.+?):(.+)', line)
 
         if not m:
