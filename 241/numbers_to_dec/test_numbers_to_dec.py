@@ -4,29 +4,31 @@ import pytest
 
 from numbers_to_dec import list_to_decimal
 
-def test_list_to_decimal():
-    # Test TypeError for input other than int
-    with pytest.raises(TypeError):
-        list_to_decimal(['Test'])
+@pytest.mark.parametrize("arg, ret", [
+                                        ([1], 1),
+                                        ([0,1], 1),
+                                        ([1,0], 10),
+                                        ([1,1], 11)
+                                    ])
+def test_list_to_decimal(arg, ret):
+    assert list_to_decimal(arg) == ret
 
-    with pytest.raises(TypeError):
-        list_to_decimal([None])
-
-    with pytest.raises(TypeError):
-        list_to_decimal([True])
-
-    # Test ValueError for int input out of range
+def test_value_error_low():
     with pytest.raises(ValueError):
         list_to_decimal([-1])
 
+def test_value_error_high():
     with pytest.raises(ValueError):
         list_to_decimal([10])
 
-    with pytest.raises(ValueError):
-        list_to_decimal([1000])
+def test_type_error_str():
+    with pytest.raises(TypeError):
+        list_to_decimal(['Test'])
 
-    # Test correct output for inputs of correct type
-    assert list_to_decimal([1]) == 1
-    assert list_to_decimal([0,1]) == 1
-    assert list_to_decimal([1,0]) == 10
-    assert list_to_decimal([1,1]) == 11
+def test_type_error_none():
+    with pytest.raises(TypeError):
+        list_to_decimal([None])
+
+def test_type_error_bool():
+    with pytest.raises(TypeError):
+        list_to_decimal([True])
