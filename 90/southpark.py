@@ -23,7 +23,6 @@ def get_num_words_spoken_by_character_per_episode(content: str) -> DefaultDict:
        keys=characters and values=Counter object,
        which is a mapping of episode=>words spoken"""
 
-    scratch = defaultdict(defaultdict)
     words = defaultdict(Counter)
     
     reader = csv.DictReader(content.splitlines())
@@ -32,15 +31,14 @@ def get_num_words_spoken_by_character_per_episode(content: str) -> DefaultDict:
         character = line['Character']
         episode = line['Episode']
         count = len(line['Line'].split())
-        scratch[character][episode] = scratch[character].get(episode, 0) + count
+        words[character][episode] += count
         
-    for k, v in scratch.items():
-        words[k] = Counter(v)
-
     return words
 
 
 content = get_season_csv_file(1)
+print(get_num_words_spoken_by_character_per_episode(content)['Agent 1'])
+print(get_num_words_spoken_by_character_per_episode(content)['Anthropologist'])
 print(get_num_words_spoken_by_character_per_episode(content)['Cartman'])
 
 
