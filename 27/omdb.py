@@ -26,7 +26,6 @@ with open(DATA_LOCAL) as fp:
 
 
 import re
-from collections import Counter
 
 
 def get_movie_data(files: list) -> list:
