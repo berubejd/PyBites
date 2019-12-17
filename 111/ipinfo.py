@@ -12,15 +12,19 @@ def get_ip_country(ip_address):
     with requests.Session() as s:
         resp = s.get(IPINFO_URL.format(ip=ip_address))
 
-        if resp.status_code == 200:
-            resp_json = resp.json()
+        try:
+            resp.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(e)
+            return None
 
-            return resp_json["country"]
+        return resp.json()["country"]
 
 
 if __name__ == "__main__":
     country = get_ip_country("187.190.38.36")
-    print(country)
+    if country:
+        print(country)
 
 """
 Bite 111. Use the ipinfo API to lookup IP country ☆
