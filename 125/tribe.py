@@ -5,9 +5,13 @@ from collections import Counter
 from bs4 import BeautifulSoup
 import requests
 
+from pprint import pprint as pp
+
 AMAZON = "amazon.com"
 # static copy
-TIM_BLOG = "https://bites-data.s3.us-east-2.amazonaws.com/" "tribe-mentors-books.html"
+TIM_BLOG = ('https://bites-data.s3.us-east-2.amazonaws.com/'
+            'tribe-mentors-books.html')
+MIN_COUNT = 3
 
 
 def load_page():
@@ -16,10 +20,13 @@ def load_page():
         return session.get(TIM_BLOG).content.decode("utf-8")
 
 
-def get_top_books(content=None, limit=5):
+def get_top_books(content=None):
     """Make a BeautifulSoup object loading in content,
-       find all links and filter on AMAZON, extract the book title
-       and count them, return the top "limit" books (default 5)"""
+       find all links that contain AMAZON, extract the book title
+       and count them.
+       Return a list of (title, count) tuples where
+       count is at least MIN_COUNT
+    """
     if content is None:
         content = load_page()
 
@@ -28,17 +35,14 @@ def get_top_books(content=None, limit=5):
     soup = BeautifulSoup(content, "html.parser")
 
     for link in soup.find_all("a", href=lambda href: href and AMAZON in href):
-        book_list.append((link["href"], link.text))
+        book_list.append(link.text)
 
-    return [k[1] for k, v in Counter(book_list).most_common(limit)]
+    return [book for book in Counter(book_list).most_common() if book[1] >= MIN_COUNT]
 
 
 if __name__ == "__main__":
     top_5 = get_top_books()
-    # top_10 = get_top_books(limit=10)
-
-    print(f"Top  5: {top_5}")
-    # print(f"Top 10: {top_10}")
+    pp(top_5)
 
 """
 Bite 125. Get the most recommended books ☆
