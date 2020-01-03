@@ -8,7 +8,7 @@ def countdown_for(start=10):
 
 def countdown_recursive(start=10):
     if start == 0:
-        return
+        print('time is up')
 
     else:
         print(start)
